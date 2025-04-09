@@ -26,6 +26,10 @@ class Larafirebase
 
     public const API_URI = 'https://fcm.googleapis.com/v1/projects/:projectId/messages:send';
 
+    private $sound;
+
+    private $clickAction;
+
     public function withTitle($title)
     {
         $this->title = $title;
@@ -75,6 +79,20 @@ class Larafirebase
         return $this;
     }
 
+     public function withSound($sound)
+    {
+        $this->sound = $sound;
+
+        return $this;
+    }
+
+      public function withClickAction($clickAction)
+    {
+        $this->clickAction = $clickAction;
+
+        return $this;
+    }
+
     public function toArray()
     {
         if ($this->fromRaw) {
@@ -86,6 +104,7 @@ class Larafirebase
                         'title' => $this->title,
                         'body' => $this->body,
                         'image' => $this->image,
+                        'click_action' => $this->clickAction,
                     ],
                 ],
             ];
@@ -159,6 +178,11 @@ class Larafirebase
         return $accessToken;
     }
 
+      if($this->sound) {
+            $payload['message']['android']['notification']['sound'] = $this->sound;
+            $payload['message']['apns']['payload']['aps']['sound'] = $this->sound;
+        }
+    
     private function callApi($fields): Response
     {
         $apiURL = str_replace(':projectId', config('larafirebase.project_id'), self::API_URI);
